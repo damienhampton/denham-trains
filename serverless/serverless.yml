@@ -1,17 +1,4 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
-
-service: my-service
+service: denham-trains
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -19,11 +6,10 @@ service: my-service
 
 provider:
   name: aws
-  runtime: nodejs6.10
-
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  runtime: nodejs8.10
+  stage: dev
+  region: eu-west-1
+  environment: ${file(env.yml)
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -55,16 +41,25 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
-
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
+  trainsStationToStationWithDateAndTime:
+    handler: trains.stationToStationWithDateAndTime
+    timeout: 30
+    memorySize: 128
+    description: Check status of a job
+    events:
+      - http:
+          path: trains/{fromStation}/to/{toStation}/{year}/{month}/{day}/{time}
+          method: get
+          cors: true
+          request:
+            parameters:
+              path:
+                fromStation: true
+                toStation: true
+                year: true
+                month: true
+                day: true
+                time: true
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic
@@ -102,3 +97,14 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
