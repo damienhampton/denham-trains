@@ -13,7 +13,8 @@
     "axios": "^0.18.0",
     "lodash": "^4.17.5",
     "moment": "^2.22.1",
-    "vue": "^2.5.11"
+    "vue": "^2.5.11",
+    "vue-pull-refresh": "^0.2.7"
   },
   "browserslist": [
     "> 1%",

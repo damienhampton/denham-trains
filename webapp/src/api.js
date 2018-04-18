@@ -10,10 +10,13 @@ function getTrainTimes (fromStation,toStation,year,month,day,time) {
 
   return axios.get(url)
     .then(res => {
+      console.log(res.data.res.services)
       return res.data.res.services.map(service => {
         return {
           scheduledTime: service.locationDetail.gbttBookedDeparture,
-          estimatedTime: service.locationDetail.realtimeDeparture
+          estimatedTime: service.locationDetail.realtimeDeparture,
+          platform: service.locationDetail.platform,
+          platformConfirmed: service.locationDetail.platformConfirmed
         }
       })
     })
