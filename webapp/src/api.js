@@ -1,4 +1,5 @@
 import axios from 'axios'
+import config from './config/config'
 //import _ from 'lodash'
 
 export default {
@@ -6,7 +7,7 @@ export default {
 }
 
 function getTrainTimes (fromStation,toStation,year,month,day,time) {
-  const url = `https://i7y9a1zu90.execute-api.eu-west-1.amazonaws.com/dev/trains/${fromStation}/to/${toStation}/${year}/${month}/${day}/${time}`
+  const url = `${config.baseUrl}dev/trains/${fromStation}/to/${toStation}/${year}/${month}/${day}/${time}`
 
   return axios.get(url)
     .then(res => {
