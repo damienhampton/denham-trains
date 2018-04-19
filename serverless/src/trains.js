@@ -1,9 +1,8 @@
 'use strict';
 
-const axios = require('axios')
-
 module.exports = {
-  stationToStationWithDateAndTime
+  routeWithDateAndTime: route.routeWithDateAndTime,
+  stationWithDateAndTime
 }
 
 async function stationToStationWithDateAndTime (event, context, callback) {
@@ -11,6 +10,7 @@ async function stationToStationWithDateAndTime (event, context, callback) {
   try{
     validateInput(event)
   } catch(err) {
+    utils.error({ err, event })
     return callback(err, { event })
   }
 
@@ -23,27 +23,53 @@ async function stationToStationWithDateAndTime (event, context, callback) {
 
   let res = null
   try{
-    res = await checkTimes(fromStation, toStation, year, month, day, time)
+    res = await checkTimesFromStationToStation(fromStation, toStation, year, month, day, time)
+  } catch(err) {
+    utils.error({ err, event })
+    return callback(err, { event })
+  }
+
+  callback(null, createResponse(res));
+};
+
+async function stationWithDateAndTime (event, context, callback) {
+
+  try{
+    validateInput(event)
   } catch(err) {
     return callback(err, { event })
   }
 
-  const response = {
+  const station = event.pathParameters.station
+  const year = event.pathParameters.year
+  const month = event.pathParameters.month
+  const day = event.pathParameters.day
+  const time = event.pathParameters.time
+
+  let res = null
+  try{
+    res = await checkTimesStation(station, year, month, day, time)
+  } catch(err) {
+    return callback(err, { event })
+  }
+
+  callback(null, createResponse(res));
+};
+
+function createResponse(res){
+  return {
     statusCode: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': '*',
     },
     body: JSON.stringify({
-      res,
-      event
+      res
     }),
-  };
+  }
+}
 
-  callback(null, response);
-};
-
-function validateInput(event){
+function validateStationToStationInput(event){
   const validStations = ['DNM', 'DGC', 'MARYLBN']
   const validTimes = ['0750', '1800']
 
@@ -74,7 +100,7 @@ function validateInput(event){
 }
 
 
-async function checkTimes(fromStation, toStation, year, month, day, time){
+async function checkTimesFromStationToStation(fromStation, toStation, year, month, day, time){
 
   const url = `https://api.rtt.io/api/v1/json/search/${fromStation}/to/${toStation}/${year}/${month}/${day}/${time}`
   console.log(url)
@@ -89,3 +115,21 @@ async function checkTimes(fromStation, toStation, year, month, day, time){
   console.log(res.data)
   return res.data
 }
+
+async function checkTimesStation(station, year, month, day, time){
+
+  const url = `https://api.rtt.io/api/v1/json/search/${fromStation}/to/${toStation}/${year}/${month}/${day}/${time}`
+  console.log(url)
+  const config = {
+    auth: {
+      username: process.env.RTT_USER,
+      password: process.env.RTT_PASSWORD
+    }
+  }
+
+  const res = await axios.get(url, config)
+  console.log(res.data)
+  return res.data
+}
+
+

@@ -30,8 +30,8 @@
           <p class="text-center last-refreshed">Last refreshed: {{ lastRefreshedAt }}</p>
 
           <p class="text-center mt-5">
-            <span><a href="https://twitter.com/damien_hampton" target="_blank">Built by Damien <i class="fab fa-twitter-square"></i></a></span>
-            <span><a href="https://twitter.com/realtimetrains" target="_blank">Powered by Realtime Trains <i class="fab fa-twitter-square"></i></a></span>
+            <a href="https://twitter.com/damien_hampton" target="_blank"><span>Built by Damien <i class="fab fa-twitter-square"></i></span></a>
+            <a href="https://twitter.com/realtimetrains" target="_blank"><span>Powered by Realtime Trains <i class="fab fa-twitter-square"></i></span></a>
           </p>
         </vue-pull-refresh>
       </div>

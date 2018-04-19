@@ -9,7 +9,7 @@ provider:
   runtime: nodejs8.10
   stage: dev
   region: eu-west-1
-  environment: ${file(env.yml)
+  environment: ${file(env.yml):default_env}
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -42,10 +42,12 @@ provider:
 
 functions:
   trainsStationToStationWithDateAndTime:
-    handler: trains.stationToStationWithDateAndTime
+    handler: src/route.routeWithDateAndTime
+    tags:
+      Project: DenhamTrains
     timeout: 30
     memorySize: 128
-    description: Check status of a job
+    description: Check services between two stations
     events:
       - http:
           path: trains/{fromStation}/to/{toStation}/{year}/{month}/{day}/{time}
@@ -56,6 +58,26 @@ functions:
               path:
                 fromStation: true
                 toStation: true
+                year: true
+                month: true
+                day: true
+                time: true
+  trainsStationWithDateAndTime:
+    handler: src/station.stationWithDateAndTime
+    tags:
+      Project: DenhamTrains
+    timeout: 30
+    memorySize: 128
+    description: Check times at station
+    events:
+      - http:
+          path: station/{station}/{year}/{month}/{day}/{time}
+          method: get
+          cors: true
+          request:
+            parameters:
+              path:
+                station: true
                 year: true
                 month: true
                 day: true
